@@ -1,3 +1,7 @@
+<?php
+include '../includes/db_connect.php';
+include '../includes/header.php';
+?>
 <h3>Manage Course</h3>
 
 <h4>Add Course</h4>
