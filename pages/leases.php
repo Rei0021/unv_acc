@@ -165,7 +165,10 @@ if (isset($_POST['add_lease'])) {
     $room_id = $_POST['room_id'];
     $lease_start_date = $_POST['lease_start_date'];
     $duration_semesters = intval($_POST['duration_semesters']);
-    $lease_end_date = date('Y-m-d', strtotime("+$duration_semesters months", strtotime($lease_start_date)));
+    
+    // Each semester is 4 months, calculate the actual end date
+    $duration_months = $duration_semesters * 4;
+    $lease_end_date = date('Y-m-d', strtotime("+$duration_months months", strtotime($lease_start_date)));
 
     // Fetch the monthly rent for the selected room
     $rent_query = "SELECT monthly_rent FROM hall_rooms WHERE room_id = ?";
@@ -181,8 +184,8 @@ if (isset($_POST['add_lease'])) {
         exit();
     }
 
-    // Calculate total rent amount for the lease duration
-    $rent_amount = $monthly_rent * $duration_semesters;
+    // Calculate total rent amount for the lease duration (duration in months, not semesters)
+    $rent_amount = $monthly_rent * $duration_months;
 
     // Insert the lease into the database
     $sql = "INSERT INTO leases (student_id, room_id, lease_start_date, lease_end_date, duration_semesters, rent_amount) 
@@ -204,6 +207,7 @@ if (isset($_POST['add_lease'])) {
         echo "<p>Error preparing query: " . $conn->error . "</p>";
     }
 }
+
 ?>
 
 
@@ -218,6 +222,7 @@ if (isset($_POST['add_lease'])) {
         <th>Start Date</th>
         <th>End Date</th>
         <th>Duration (Semesters)</th>
+        <th>Duration (Months)</th> <!-- Added for clarity -->
         <th>Rent Amount</th>
         <th>Payment Status</th>
         <th>Actions</th>
@@ -236,6 +241,7 @@ if (isset($_POST['add_lease'])) {
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
+            $duration_months = $row['duration_semesters'] * 4;  // Calculate months from semesters
             echo "<tr>
                 <td>{$row['lease_id']}</td>
                 <td>{$row['first_name']} {$row['last_name']}</td>
@@ -244,6 +250,7 @@ if (isset($_POST['add_lease'])) {
                 <td>{$row['lease_start_date']}</td>
                 <td>{$row['lease_end_date']}</td>
                 <td>{$row['duration_semesters']}</td>
+                <td>{$duration_months}</td> <!-- Added for clarity -->
                 <td>{$row['rent_amount']}</td>
                 <td>{$row['payment_status']}</td>
                 <td>
