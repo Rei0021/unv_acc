@@ -80,7 +80,7 @@ if (!isset($_SESSION['user_id'])) {
         <p>Use the links below to navigate:</p>
 
         <ul>
-            <li><a href="pages/students.php">Student List</a></li>
+            <li><a href="pages/student_list.php">Student List</a></li>
             <li><a href="pages/list_course.php">Courses</a></li>
             <li><a href="pages/list_staffs.php">Staffs</a></li>
             <li><a href="pages/list_halls.php">Halls of Residence</a></li>
