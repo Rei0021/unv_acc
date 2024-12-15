@@ -44,7 +44,7 @@ if (isset($_POST['login'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="../assets/css/style.css"> <!-- Optional CSS -->
+    <link rel="stylesheet" href="../css/style.css"> <!-- Optional CSS -->
 </head>
 <body>
     <h2>Login</h2>

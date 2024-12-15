@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Accomodation Management System</title>
+    <title>University Accommodation Management System</title>
 </head>
 
 <style>
