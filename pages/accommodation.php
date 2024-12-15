@@ -1,11 +1,17 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../pages/login.php");
-    exit();
-}
+    include '../includes/db_connect.php';
+    include '../includes/header.php';
 ?>
-<!DOCTYPE html>
+
+<h2>Manage Accommodation</h2>
+
+<!-- Tabs or mini nav-->
+ <nav>
+    <a href="?type=hall">Halls of Residence</a> |
+    <a href="?type=flat">Student Flats</a>
+ </nav>
+
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -56,33 +62,14 @@ if (!isset($_SESSION['user_id'])) {
 
 
 <body>
-
+    
 <?php
-include '../includes/db_connect.php';
-include '../includes/header.php';
+    $type = $_GET['type'] ?? 'hall'; // Default to halls of residence
+    if ($type === 'hall') {
+        include 'acco_halls.php';
+    } else {
+        include 'acco_flats.php';
+    }
 ?>
 
-<h2>Manage Accommodation</h2>
-
-<!-- Tabs for Halls and Flats -->
- <div class="navbar">
-    <nav>
-    <a href="?type=hall">Halls of Residence</a> |
-    <a href="?type=flat">Student Flats</a>
-    </nav>
- </div>
-
-
-<?php
-$type = $_GET['type'] ?? 'hall'; // Default to halls
-if ($type === 'hall') {
-    include 'halls.php';
-} else {
-    include 'flats.php';
-}
-?>
-
-<?php include '../includes/footer.php'; ?>
-
-</body>
-</html>
+ <?php include '../includes/footer.php'; ?>

@@ -73,9 +73,9 @@
         <ul>
         <li><a href="/univeracc/unv_acc/index.php">Home</a></li>
             <li><a href="/univeracc/unv_acc/pages/students.php">Manage Students</a></li>
-            <li><a href="/univeracc/unv_acc/pages/accommodation.php?type=hall">Manage Halls/Flats</a></li>
-            <li><a href="/univeracc/unv_acc/pages/room_assignments.php">Assign Room</a></li>
-            <li><a href="/univeracc/unv_acc/pages/leases.php">Manage Leases</a></li>
+            <li><a href="/univeracc/unv_acc/pages/staffs.php">Manage Staffs</a></li>
+            <li><a href="/univeracc/unv_acc/pages/accommodation.php">Manage Accommodation</a></li>
+            <li><a href="/univeracc/unv_acc/pages/rooms.php">Manage Rooms</a></li>
             <li><a href="/univeracc/unv_acc/pages/reports.php">Reports</a></li>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <li><a href="/univeracc/unv_acc/pages/logout.php">Logout</a></li>

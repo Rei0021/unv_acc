@@ -170,16 +170,24 @@ if ($report === 'available_rooms') {
 
 if ($report === 'unpaid_invoices') {
     echo "<h3>Unpaid Invoices</h3>";
-    $result = $conn->query("SELECT invoices.invoice_id, students.first_name, students.last_name, invoices.payment_due 
-                            FROM invoices 
-                            JOIN students ON invoices.lease_id = students.student_id
-                            WHERE invoices.payment_date IS NULL");
+
+    $sql = "SELECT invoices.invoice_number, students.first_name, students.last_name, invoices.payment_due
+            FROM invoices
+            JOIN students ON invoices.student_id = students.student_id
+            WHERE invoices.payment_date IS NULL";
+
+    $result = $conn->query($sql);
+
+    if (!$result) {
+        die("Query failed: " . $conn->error);
+    }
+
     if ($result->num_rows > 0) {
         echo "<table border='1'>
-                <tr><th>Invoice ID</th><th>Student Name</th><th>Amount Due</th></tr>";
+                <tr><th>Invoice Number</th><th>Student Name</th><th>Amount Due</th></tr>";
         while ($row = $result->fetch_assoc()) {
             echo "<tr>
-                    <td>{$row['invoice_id']}</td>
+                    <td>{$row['invoice_number']}</td>
                     <td>{$row['first_name']} {$row['last_name']}</td>
                     <td>{$row['payment_due']}</td>
                   </tr>";
@@ -189,6 +197,7 @@ if ($report === 'unpaid_invoices') {
         echo "<p>No unpaid invoices.</p>";
     }
 }
+
 
 if ($report === 'rent_summary') {
     echo "<h3>Rent Summary</h3>";

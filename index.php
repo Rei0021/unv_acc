@@ -80,12 +80,11 @@ if (!isset($_SESSION['user_id'])) {
         <p>Use the links below to navigate:</p>
 
         <ul>
-            <li><a href="pages/students.php">Manage Students</a></li>
-            <li><a href="pages/accommodation.php?type=hall">Manage Halls of Residence</a></li>
-            <li><a href="pages/accommodation.php?type=flat">Manage Student Flats</a></li>
-            <li><a href="pages/room_assignments.php">Manage Room Assignments</a></li>
-            <li><a href="pages/manage_flat_rooms.php">Manage Flat Rooms</a></li>
-            <li><a href="pages/reports.php">Reports</a></li>
+            <li><a href="pages/students.php">Student List</a></li>
+            <li><a href="pages/list_staffs.php">Staffs</a></li>
+            <li><a href="pages/list_halls.php">Halls of Residence</a></li>
+            <li><a href="pages/list_flats.php">Student Flats</a></li>
+            <li><a href="pages/list_rooms.php">Room Assignments</a></li>
             <li><a href="pages/leases.php">Manage Leases</a></li>
         </ul>
     </div>
