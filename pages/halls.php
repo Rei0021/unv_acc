@@ -84,6 +84,13 @@
     </tr>
 
     <?php
+    session_start(); // Start the session
+
+    if (isset($_SESSION['alert'])) {
+        echo "<div class='alert {$_SESSION['alert']['type']}'>{$_SESSION['alert']['message']}</div>";
+        unset($_SESSION['alert']); // Clear the alert
+    }
+    
     $sql = "SELECT hr.room_id, hr.place_number, hr.room_number, hr.monthly_rent, h.name AS hall_name
             FROM hall_rooms hr
             JOIN halls_of_residence h ON hr.hall_id = h.hall_id";
@@ -98,7 +105,7 @@
                 <td>{$row['monthly_rent']}</td>
                 <td>{$row['hall_name']}</td>
                 <td>
-                    <a href='?edit_room={$row['room_id']}'>Edit</a>
+                    <a href='?edit_room={$row['room_id']}' class='action-btn edit-btn'>Edit</a>
                     <a href='?delete_room={$row['room_id']}'>Delete</a>
                 </td>
             </tr>";
@@ -108,7 +115,7 @@
     }
 
     if (isset($_GET['edit_room'])) {
-        $room_id = $_GET['edit_room'];
+        $room_id = intval($_GET['edit_room']);
     
         // Fetch room details
         $sql = "SELECT * FROM hall_rooms WHERE room_id = $room_id";
@@ -144,19 +151,22 @@
         }
     }
     
-
-    if (isset($_GET['delete_room'])) {
-        $room_id = intval($_GET['delete_room']); // Sanitize input
-        $stmt = $conn->prepare("DELETE FROM hall_rooms WHERE room_id = ?");
-        $stmt->bind_param("i", $room_id);
+    if (isset($_GET['delete'])) {
+        $hall_id = intval($_GET['delete']);
+        $sql = "DELETE FROM halls_of_residence WHERE hall_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $hall_id);
+    
         if ($stmt->execute()) {
-            echo "Room deleted successfully.";
-            exit();
+            $_SESSION['alert'] = ['type' => 'success', 'message' => 'Hall deleted successfully.'];
         } else {
-            echo "Error deleting room.";
+            $_SESSION['alert'] = ['type' => 'error', 'message' => 'Error deleting hall: ' . $stmt->error];
         }
-        $stmt->close();
+        header("Location: halls.php"); // Redirect back to the same page
+        exit();
     }
+    
+    
     
 
     if (isset($_POST['update_room'])) {
@@ -202,6 +212,55 @@ if (isset($_POST['add_hall'])) {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
+
+if (isset($_GET['edit_hall'])) {
+    $hall_id = intval($_GET['edit_hall']);
+    $sql = "SELECT * FROM halls_of_residence WHERE hall_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $hall_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $hall = $result->fetch_assoc();
+        ?>
+        <h4>Edit Hall</h4>
+        <form action="" method="post">
+            <input type="hidden" name="hall_id" value="<?php echo $hall['hall_id']; ?>">
+            <input type="text" name="name" value="<?php echo $hall['name']; ?>" required>
+            <input type="text" name="address" value="<?php echo $hall['address']; ?>" required>
+            <input type="text" name="telephone" value="<?php echo $hall['telephone']; ?>" required>
+            <input type="text" name="manager_name" value="<?php echo $hall['manager_name']; ?>" required>
+            <button type="submit" name="update_hall">Update Hall</button>
+        </form>
+        <?php
+    } else {
+        echo "<div class='alert error'>Hall not found.</div>";
+    }
+    $stmt->close();
+}
+
+if (isset($_POST['update_hall'])) {
+    $hall_id = intval($_POST['hall_id']);
+    $name = trim($_POST['name']);
+    $address = trim($_POST['address']);
+    $telephone = trim($_POST['telephone']);
+    $manager_name = trim($_POST['manager_name']);
+
+    $sql = "UPDATE halls_of_residence SET name = ?, address = ?, telephone = ?, manager_name = ? WHERE hall_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssii", $name, $address, $telephone, $manager_name, $hall_id);
+
+    if ($stmt->execute()) {
+        $_SESSION['alert'] = ['type' => 'success', 'message' => 'Hall updated successfully.'];
+    } else {
+        $_SESSION['alert'] = ['type' => 'error', 'message' => 'Error updating hall: ' . $stmt->error];
+    }
+
+    header("Location: halls.php"); // Redirect back to the list
+    exit();
+}
+
 
 // Delete Hall Logic
 if (isset($_GET['delete'])) {
