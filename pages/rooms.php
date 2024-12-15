@@ -169,8 +169,10 @@ tr:hover {
 
 </style>
 
-<div class="form-container">
 <h2>Manage Rooms</h2>
+
+<div class="form-container">
+
 
 <h3>Add Room</h3>
 
