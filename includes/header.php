@@ -73,6 +73,7 @@
         <ul>
         <li><a href="/univeracc/unv_acc/index.php">Home</a></li>
             <li><a href="/univeracc/unv_acc/pages/students.php">Manage Students</a></li>
+            <li><a href="/univeracc/unv_acc/pages/courses.php">Manage Courses</a></li>
             <li><a href="/univeracc/unv_acc/pages/staffs.php">Manage Staffs</a></li>
             <li><a href="/univeracc/unv_acc/pages/accommodation.php">Manage Accommodation</a></li>
             <li><a href="/univeracc/unv_acc/pages/rooms.php">Manage Rooms</a></li>
