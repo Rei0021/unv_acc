@@ -112,6 +112,56 @@ body {
     font-style: italic;
 }
 
+/* Additional Table Section Styles */
+.table-section {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.table-section h4 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.table-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.table-section table, .table-section th, .table-section td {
+    border: 1px solid #ddd;
+}
+
+.table-section th, .table-section td {
+    padding: 10px;
+    text-align: left;
+}
+
+.table-section th {
+    background-color: #f1485b;
+    color: white;
+}
+
+.table-section tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table-section tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table-section p {
+    text-align: center;
+    color: #777;
+    font-style: italic;
+}
+
+
 </style>
 
 
@@ -253,29 +303,91 @@ if ($report === 'unpaid_invoices') {
 if ($report === 'rent_summary') {
     echo "<div class='report-section'>";
     echo "<h3>Rent Summary</h3>";
-    $result = $conn->query("SELECT halls_of_residence.name AS hall_name, 
-                            SUM(hall_rooms.monthly_rent) AS total_rent 
-                            FROM hall_rooms 
-                            JOIN halls_of_residence ON hall_rooms.hall_id = halls_of_residence.hall_id 
-                            JOIN leases ON hall_rooms.room_id = leases.room_id 
-                            GROUP BY halls_of_residence.name");
+
+    // Halls Section
+    echo "<h4>Halls</h4>";
+    echo "<table>
+            <tr>
+                <th>Place Number</th>
+                <th>Room Number</th>
+                <th>Monthly Rent</th>
+                <th>Room Type</th>
+                <th>Hall Name</th>
+            </tr>";
+
+    $sql = "SELECT r.place_number, r.room_number, r.monthly_rent,
+                r.room_type, hr.name AS hall_id
+            FROM rooms r
+            JOIN halls_of_residence hr ON r.hall_id = hr.hall_id
+            WHERE r.room_type = 'Hall'";
+    $result = $conn->query($sql);
+
     if ($result->num_rows > 0) {
-        echo "<table>
-                <tr><th>Hall Name</th><th>Total Rent</th></tr>";
-        while ($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()){
             echo "<tr>
-                    <td>{$row['hall_name']}</td>
-                    <td>{$row['total_rent']}</td>
+                    <td>{$row['place_number']}</td>
+                    <td>{$row['room_number']}</td>
+                    <td>{$row['monthly_rent']}</td>
+                    <td>{$row['room_type']}</td>
+                    <td>{$row['hall_id']}</td>
                   </tr>";
         }
-        echo "</table>";
     } else {
-        echo "<p>No rent collected yet.</p>";
+        echo "<tr><td colspan='5'>No rooms found</td></tr>";
     }
+    echo "</table>";
+
+    // Flats Section
+    echo "<h4>Flats</h4>";
+    echo "<table>
+            <tr>
+                <th>Place Number</th>
+                <th>Room Number</th>
+                <th>Monthly Rent</th>
+                <th>Apartment Number</th>
+            </tr>";
+
+    $sql = "SELECT r.place_number, r.room_number, r.monthly_rent,
+                r.room_type, sf.apartment_number AS flat_id
+            FROM rooms r
+            JOIN student_flats sf ON r.flat_id = sf.flat_id
+            WHERE r.room_type = 'Flat'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()){
+            echo "<tr>
+                    <td>{$row['place_number']}</td>
+                    <td>{$row['room_number']}</td>
+                    <td>{$row['monthly_rent']}</td>
+                    <td>{$row['flat_id']}</td>
+                  </tr>";
+        }
+    } else {
+        echo "<tr><td colspan='4'>No rooms found</td></tr>";
+    }
+    echo "</table>";
+
+    // Total Rent Section
+    echo "<h4>Total Rent Value</h4>";
+    echo "<table>
+            <tr><th>Total Rent Value</th></tr>";
+
+    $sql = "SELECT SUM(monthly_rent) AS total_rent FROM rooms";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()){
+            echo "<tr><td>{$row['total_rent']}</td></tr>";
+        }
+    } else {
+        echo "<tr><td colspan='1'>No total amount found</td></tr>";
+    }
+    echo "</table>";
+
     echo "</div>";
 }
+
+
 ?>
 
-<?php include '../includes/footer.php'; ?>
-</body>
-</html>
