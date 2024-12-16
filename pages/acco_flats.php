@@ -208,6 +208,7 @@ if (isset($_GET['edit'])) {
     ?>
 
     <!-- Edit Flat Form (Pre-filled with existing data) -->
+    <div class="form-container">
     <h4>Edit Flat</h4>
     <form action="" method="post">
         <input type="text" name="apartment_number" value="<?php echo $flat['apartment_number']; ?>" required>
@@ -215,7 +216,7 @@ if (isset($_GET['edit'])) {
         <input type="number" name="total_bedrooms" value="<?php echo $flat['total_bedrooms']; ?>" required>
         <button type="submit" name="edit_flat">Update Flat</button>
     </form>
-
+</div>
 <?php
 }
 ?>

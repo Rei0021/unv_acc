@@ -1,20 +1,9 @@
-
-
-<h3>Manage Halls of Residence</h3>
-
-<div class="form-container">
-<!-- Add Hall Form -->
-<form action="" method="post">
-    <h4>Add Hall</h4>
-    <input type="text" name="name" placeholder="Hall Name" required>
-    <input type="text" name="address" placeholder="Address" required>
-    <input type="text" name="telephone" placeholder="Telephone" required> <!-- Ensure this name matches -->
-    <input type="text" name="manager_name" placeholder="Manager Name" required> <!-- Ensure this name matches -->
-    <button type="submit" name="add_hall">Add Hall</button>
-</form>
-</div>
-
 <?php
+// Start output buffering
+ob_start();
+
+include '../includes/db_connect.php';
+
 // Add Hall Logic
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_hall'])) {
     $name = $_POST['name'] ?? null;
@@ -27,8 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_hall'])) {
                 VALUES ('$name', '$address', '$telephone', '$manager_name')";
 
         if ($conn->query($sql) === TRUE) {
-            // Redirect after adding hall
-            header("Location: accommodation.php?type=hall"); // Replace "accommodation.php?type=hall" with your actual page URL
+            header("Location: accommodation.php?type=hall");
             exit();
         } else {
             echo "Error: " . $sql . "<br>" . $conn->error;
@@ -37,63 +25,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_hall'])) {
         echo "Please fill in all required fields.";
     }
 }
-?>
 
-<?php
-// Edit Hall Logic
+// Delete Hall Logic
+if (isset($_GET['delete'])) {
+    $hall_id = $_GET['delete'];
+    $sql = "DELETE FROM halls_of_residence WHERE hall_id = $hall_id";
+
+    if ($conn->query($sql) === TRUE) {
+        header("Location: accommodation.php?type=hall");
+        exit();
+    } else {
+        echo "Error deleting hall: " . $conn->error;
+    }
+}
+
+// Fetch existing hall data for editing
 if (isset($_GET['edit'])) {
     $hall_id = $_GET['edit'];
-
-    // Fetch current hall data for editing
     $sql = "SELECT * FROM halls_of_residence WHERE hall_id = $hall_id";
     $result = $conn->query($sql);
     $hall = $result->fetch_assoc();
 
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['edit_hall'])) {
-        // Get updated hall data from the form
-        $name = $_POST['name'] ?? null;
-        $address = $_POST['address'] ?? null;
-        $telephone = $_POST['telephone'] ?? null;
-        $manager_name = $_POST['manager_name'] ?? null;
+        $name = $_POST['name'];
+        $address = $_POST['address'];
+        $telephone = $_POST['telephone'];
+        $manager_name = $_POST['manager_name'];
 
-        // Update query
-        $updateSql = "UPDATE halls_of_residence SET name = '$name', address = '$address',
-        telephone = '$telephone', manager_name = '$manager_name' WHERE hall_id = $hall_id";
+        $updateSql = "UPDATE halls_of_residence SET 
+                      name = '$name', address = '$address', telephone = '$telephone', manager_name = '$manager_name' 
+                      WHERE hall_id = $hall_id";
 
         if ($conn->query($updateSql) === TRUE) {
-            // Redirect after updating hall
-            header("Location: accommodation.php?type=hall"); // Redirect to the halls list page
+            header("Location: accommodation.php?type=hall");
             exit();
         } else {
             echo "Error updating hall: " . $conn->error;
         }
     }
-    ?>
-
-    <!-- Edit Hall Form (Pre-filled with existing data) -->
-    <h4>Edit Hall</h4>
-    <form action="" method="post">
-        <input type="text" name="name" value="<?php echo $hall['name']; ?>" required>
-        <input type="text" name="address" value="<?php echo $hall['address']; ?>" required>
-        <input type="text" name="telephone" value="<?php echo $hall['telephone']; ?>" required>
-        <input type="text" name="manager_name" value="<?php echo $hall['manager_name']; ?>" required>
-        <button type="submit" name="edit_hall">Update Hall</button>
-    </form>
-
-<?php
 }
+
+ob_end_flush(); // Send output to browser
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-<style>
-
-.h4-header {
+    <title>Manage Halls</title>
+    <style>
+        .h4-header {
             text-align: center;
         }
 
@@ -182,26 +164,38 @@ tr:hover {
     color: #f1485b;
     border: 1px solid #f1485b;
 }
+    </style>
+</head>
+<body>
 
-</style>
-    
+<h3>Manage Halls of Residence</h3>
+
+<div class="form-container">
+    <!-- Add Hall Form -->
+    <form action="" method="post">
+        <h4>Add Hall</h4>
+        <input type="text" name="name" placeholder="Hall Name" required>
+        <input type="text" name="address" placeholder="Address" required>
+        <input type="text" name="telephone" placeholder="Telephone" required>
+        <input type="text" name="manager_name" placeholder="Manager Name" required>
+        <button type="submit" name="add_hall">Add Hall</button>
+    </form>
+</div>
+
 
 <br><hr>
 
 <h4 class="h4-header">List of Halls</h4>
-
-<table border="1">
-    <tr>    
+<table>
+    <tr>
         <th>Hall ID</th>
         <th>Name</th>
         <th>Address</th>
         <th>Phone Number</th>
-        <th>Staff ID</th>
+        <th>Manager Name</th>
         <th>Actions</th>
     </tr>
-
     <?php
-    // Fetch Hall Data
     $sql = "SELECT * FROM halls_of_residence";
     $result = $conn->query($sql);
 
@@ -215,33 +209,31 @@ tr:hover {
                     <td>" . $row['telephone'] . "</td>
                     <td>" . $row['manager_name'] . "</td>
                     <td>
-                        <a href='?type=hall&edit=" . $row['hall_id'] . "'>Edit</a>
-                        <a href='?type=hall&delete=" . $row['hall_id'] . "'>Delete</a>
+                        <a href='?edit=" . $row['hall_id'] . "'>Edit</a>
+                        <a href='?delete=" . $row['hall_id'] . "'>Delete</a>
                     </td>
                 </tr>
             ";
         }
     } else {
-        echo "<tr><td colspan='6'>No halls found</tr>";
+        echo "<tr><td colspan='6'>No halls found</td></tr>";
     }
     ?>
 </table>
 
+<?php if (isset($hall)): ?>
+    <div class="form-container">
+    <!-- Edit Hall Form -->
+    <h4>Edit Hall</h4>
+    <form action="" method="post">
+        <input type="text" name="name" value="<?php echo $hall['name']; ?>" required>
+        <input type="text" name="address" value="<?php echo $hall['address']; ?>" required>
+        <input type="text" name="telephone" value="<?php echo $hall['telephone']; ?>" required>
+        <input type="text" name="manager_name" value="<?php echo $hall['manager_name']; ?>" required>
+        <button type="submit" name="edit_hall">Update Hall</button>
+    </form>
+</div>
+<?php endif; ?>
+
 </body>
 </html>
-
-<?php
-// Delete Hall Logic
-if (isset($_GET['delete'])) {
-    $hall_id = $_GET['delete'];
-    $sql = "DELETE FROM halls_of_residence WHERE hall_id = $hall_id";
-
-    if ($conn->query($sql) === TRUE) {
-        // Redirect after deleting hall
-        header("Location: accommodation.php?type=hall"); // Redirect to the halls list page
-        exit();
-    } else {
-        echo "Error deleting hall: " . $conn->error;
-    }
-}
-?>

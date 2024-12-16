@@ -238,7 +238,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 </body>
 </html>
-
+<div class="form-container">
 <?php
 // Edit Form
 if (isset($adviser)) {
@@ -255,6 +255,5 @@ if (isset($adviser)) {
     </form>
     ";
 }
-
-
 ?>
+</div>

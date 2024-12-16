@@ -3,66 +3,70 @@
     include '../includes/header.php';
 ?>
 
-<h2>Manage Accommodation</h2>
-
-<!-- Tabs or mini nav-->
- <nav>
-    <a href="?type=hall">Halls of Residence</a> |
-    <a href="?type=flat">Student Flats</a>
- </nav>
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accommodation</title>
+    <title>Document</title>
 </head>
-
-<style>
-
-
-    body {
+<body>
+    <style>
+body {
+        margin: 0;
+        padding: 0;
         display: wrap;
-        
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Full viewport height */
+        background-color: #f9f9f9;
+        font-family: Arial, sans-serif;
     }
 
-    h2{
-        text-align: center;
-    }
-
-
-    .navbar {
+    .mg-navbar {
         display: flex;
         justify-content: center;
         align-items: center;
         background-color: #f9f9f9;
+        margin-bottom: 20px;
     }
 
-    .navbar nav {
+    .mg-navbar nav {
         background-color: #f1485b;
         padding: 10px 20px;
         border-radius: 8px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
     }
 
-    .navbar nav a {
+    .mg-navbar nav a {
         text-decoration: none;
         color: white;
         transition: all 0.3s ease;
     }
 
-    .navbar nav a:hover {
+    .mg-navbar nav a:hover {
         text-decoration: none;
         color: #212f3c;
     }
 
-    
+    .mc-cont {
+        text-align: center;
+    }
 </style>
-
-
-<body>
     
+</body>
+</html>
+
+<h2 class="mc-cont">Manage Accommodation</h2>
+
+<!-- Tabs or mini nav-->
+ <div class="mg-navbar">
+ <nav>
+    <a href="?type=hall">Halls of Residence</a> |
+    <a href="?type=flat">Student Flats</a>
+ </nav>
+</div>
+
 <?php
     $type = $_GET['type'] ?? 'hall'; // Default to halls of residence
     if ($type === 'hall') {

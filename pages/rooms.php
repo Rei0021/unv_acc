@@ -77,6 +77,10 @@
 </head>
 <body>
 <style>
+
+h2{
+        text-align: center;
+    }
 .h4-header {
     text-align: center;
 }
@@ -215,48 +219,7 @@ tr:hover {
     
 </form>
         </div>
-
-<?php if (isset($room)) { ?>
-<h3>Edit Room</h3>
-<form action="" method="post">
-    <input type="text" name="place_number" value="<?php echo $room['place_number']; ?>" readonly>
-    <input type="text" name="room_number" value="<?php echo $room['room_number']; ?>" required>
-    <input type="text" name="monthly_rent" value="<?php echo $room['monthly_rent']; ?>" required>
-    <input type="text" name="room_type" value="<?php echo $room['room_type']; ?>" required>
-
-    <select name="hall_id">
-        <option value="">Select Hall</option>
-        <?php
-        // Fetch halls to populate dropdown
-            $sql = "SELECT * FROM halls_of_residence";
-            $result = $conn->query($sql);
-
-            while ($row = $result->fetch_assoc()) {
-                $selected = $room['hall_id'] == $row['hall_id'] ? 'selected' : '';
-                echo "<option value='" . $row['hall_id'] . "' $selected>
-                " . $row['name'] . "</option>";
-            }
-        ?>
-    </select>
-
-    <select name="flat_id">
-        <option value="">Select Flat</option>
-        <?php
-        // Fetch flats to populate dropdown
-            $sql = "SELECT * FROM student_flats";
-            $result = $conn->query($sql);
-
-            while ($row = $result->fetch_assoc()) {
-                $selected = $room['flat_id'] == $row['flat_id'] ? 'selected' : '';
-                echo "<option value='" . $row['flat_id'] . "' $selected>
-                " . $row['apartment_number'] . "</option>";
-            }
-        ?>
-    </select>
-
-    <button type="submit" name="edit_room">Update Room</button>
-</form>
-<?php } ?>
+        
 
 <br><hr>
 
@@ -305,6 +268,47 @@ tr:hover {
         }
     ?>
 </table>
+
+<?php if (isset($_GET['edit']) && isset($room)): ?>
+<div class="form-container">
+    <h3>Edit Room</h3>
+    <form action="" method="post">
+        <input type="text" name="place_number" value="<?php echo $room['place_number']; ?>" readonly>
+        <input type="text" name="room_number" value="<?php echo $room['room_number']; ?>" required>
+        <input type="text" name="monthly_rent" value="<?php echo $room['monthly_rent']; ?>" required>
+        <input type="text" name="room_type" value="<?php echo $room['room_type']; ?>" required>
+
+        <select name="hall_id">
+            <option value="">Select Hall</option>
+            <?php
+            $sql = "SELECT * FROM halls_of_residence";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_assoc()) {
+                $selected = $room['hall_id'] == $row['hall_id'] ? 'selected' : '';
+                echo "<option value='" . $row['hall_id'] . "' $selected>
+                " . $row['name'] . "</option>";
+            }
+            ?>
+        </select>
+
+        <select name="flat_id">
+            <option value="">Select Flat</option>
+            <?php
+            $sql = "SELECT * FROM student_flats";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_assoc()) {
+                $selected = $room['flat_id'] == $row['flat_id'] ? 'selected' : '';
+                echo "<option value='" . $row['flat_id'] . "' $selected>
+                " . $row['apartment_number'] . "</option>";
+            }
+            ?>
+        </select>
+
+        <button type="submit" name="edit_room">Update Room</button>
+    </form>
+</div>
+<?php endif; ?>
+
 
     </body>
     </html>

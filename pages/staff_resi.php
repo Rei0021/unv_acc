@@ -95,25 +95,7 @@
 </form>
 </div>
 
-<?php
-    // If editing, show the form with pre-filled data
-    if (isset($_GET['edit'])) {
-        echo "
-        <h4>Edit Staff</h4>
-        <form action='' method='post'>
-            <input type='text' name='fname' value='{$staff['first_name']}' required>
-            <input type='text' name='lname' value='{$staff['last_name']}' required>
-            <input type='email' name='email' value='{$staff['email']}' required>
-            <input type='text' name='homeAddress' value='{$staff['home_address']}' required>
-            <input type='date' name='dateBirth' value='{$staff['date_of_birth']}' required>
-            <input type='text' name='gender' value='{$staff['gender']}' required>
-            <input type='text' name='position' value='{$staff['position']}' required>
-            <input type='text' name='location' value='{$staff['location']}' required>
-            <button type='submit'>Update Staff</button>
-        </form>
-        ";
-    }
-?>
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -268,3 +250,27 @@ tr:hover {
         }
     ?>
 </table>
+
+<div class="form-container">
+<?php
+
+    // If editing, show the form with pre-filled data
+    if (isset($_GET['edit'])) {
+        echo "
+        <h4>Edit Staff</h4>
+        <form action='' method='post'>
+            <input type='text' name='fname' value='{$staff['first_name']}' required>
+            <input type='text' name='lname' value='{$staff['last_name']}' required>
+            <input type='email' name='email' value='{$staff['email']}' required>
+            <input type='text' name='homeAddress' value='{$staff['home_address']}' required>
+            <input type='date' name='dateBirth' value='{$staff['date_of_birth']}' required>
+            <input type='text' name='gender' value='{$staff['gender']}' required>
+            <input type='text' name='position' value='{$staff['position']}' required>
+            <input type='text' name='location' value='{$staff['location']}' required>
+            <button type='submit'>Update Staff</button>
+        </form>
+        ";
+    }
+ 
+?>   
+</div>
