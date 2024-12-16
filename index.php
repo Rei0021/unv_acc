@@ -81,7 +81,7 @@ if (!isset($_SESSION['user_id'])) {
 
         <ul>
             <li><a href="pages/student_list.php">Student List</a></li>
-            <li><a href="pages/list_course.php">Courses</a></li>
+            <li><a href="pages/list_course.php">Courses/Instructors List</a></li>
             <li><a href="pages/list_staffs.php">Staffs</a></li>
             <li><a href="pages/list_halls.php">Halls of Residence</a></li>
             <li><a href="pages/list_flats.php">Student Flats</a></li>
