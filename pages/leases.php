@@ -1,105 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leases</title>
-</head>
 
-<style>
-
-
-    table {
-        margin: 0 auto; 
-        border-collapse: collapse; 
-    }
-
-    table {
-        width: 80%;
-        margin: 20px auto; 
-        border-collapse: collapse;
-        background-color: white;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    }
-
-    th, td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-
-    th {
-        background-color: #34495e;
-        color: white;
-    }
-
-    tr:hover {
-        background-color: #f1f1f1;
-    }
-
-    .ml-container{
-        text-align: center;
-
-    }
-
-    .form-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 15px; /* Even spacing between elements */
-        width: 90%;
-        max-width: 400px;
-        margin: auto; /* Center horizontally */
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        background-color: #f9f9fc;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Style the title */
-    .form-container h3 {
-        margin: 0;
-        color: #34495e;
-        text-align: center;
-    }
-
-    /* Style the input, select, and textarea */
-    .form-container input,
-    .form-container select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-    }
-
-    /* Style the button */
-    .form-container button {
-        width: 100%;
-        padding: 10px;
-        background-color: #f1485b;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-    }
-
-    /* Button hover effect */
-    .form-container button:hover {
-        background-color: white;
-        color: #f1485b;
-        border: 1px solid #f1485b;
-    }
-
-</style>
-
-
-<body>
-    
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
@@ -238,15 +137,41 @@ if (isset($_GET['delete'])) {
         <form action="" method="post">
             <input type="hidden" name="lease_id" value="<?= $lease_id ?>">
 
-            <!-- Pre-fill Student -->
-            <label for="student_name">Student:</label>
-            <input type="text" id="student_name" value="<?= htmlspecialchars("$first_name $last_name") ?>" disabled>
-            <input type="hidden" name="student_id" value="<?= $student_id ?>"> <!-- Preserve student_id -->
+            <!-- Dropdown for Student -->
+            <label for="student_id">Student:</label>
+            <select name="student_id" required>
+                <option value="">Select Student</option>
+                <?php
+                // Fetch students for the dropdown
+                $students_query = "SELECT student_id, first_name, last_name FROM students";
+                $students_result = $conn->query($students_query);
 
-            <!-- Pre-fill Room -->
-            <label for="room_number">Room:</label>
-            <input type="text" id="room_number" value="Room <?= htmlspecialchars($room_number) ?>" disabled>
-            <input type="hidden" name="room_id" value="<?= $room_id ?>"> <!-- Preserve room_id -->
+                while ($row = $students_result->fetch_assoc()) {
+                    $selected = ($row['student_id'] == $student_id) ? 'selected' : '';
+                    echo "<option value='{$row['student_id']}' $selected>
+                          {$row['first_name']} {$row['last_name']}
+                          </option>";
+                }
+                ?>
+            </select>
+
+            <!-- Dropdown for Room -->
+            <label for="room_id">Room:</label>
+            <select name="room_id" required>
+                <option value="">Select Room</option>
+                <?php
+                // Fetch rooms for the dropdown
+                $rooms_query = "SELECT room_id, room_number FROM hall_rooms";
+                $rooms_result = $conn->query($rooms_query);
+
+                while ($row = $rooms_result->fetch_assoc()) {
+                    $selected = ($row['room_id'] == $room_id) ? 'selected' : '';
+                    echo "<option value='{$row['room_id']}' $selected>
+                          Room {$row['room_number']}
+                          </option>";
+                }
+                ?>
+            </select>
 
             <!-- Editable Fields -->
             <label for="lease_start_date">Start Date:</label>
@@ -262,42 +187,54 @@ if (isset($_GET['delete'])) {
 <?php endif; ?>
 
 
+
+
+
 <?php
 if (isset($_GET['edit'])) {
-    $lease_id = intval($_GET['edit']);
+    $lease_id = intval($_GET['edit']); // Sanitize input
 
-    // Fetch existing lease details, including student name and room number
+    // Fetch lease details and associated data
     $edit_query = "
-        SELECT l.student_id, l.room_id, l.lease_start_date, l.duration_semesters,
-               s.first_name, s.last_name, hr.room_number
-        FROM leases l
-        JOIN students s ON l.student_id = s.student_id
-        JOIN hall_rooms hr ON l.room_id = hr.room_id
-        WHERE l.lease_id = ?
+        SELECT 
+            l.student_id, l.room_id, l.lease_start_date, l.duration_semesters,
+            s.first_name, s.last_name, hr.room_number
+        FROM 
+            leases l
+        JOIN 
+            students s ON l.student_id = s.student_id
+        JOIN 
+            hall_rooms hr ON l.room_id = hr.room_id
+        WHERE 
+            l.lease_id = ?
     ";
+
     $edit_stmt = $conn->prepare($edit_query);
     
     if ($edit_stmt) {
         $edit_stmt->bind_param("i", $lease_id);
         $edit_stmt->execute();
         $edit_stmt->bind_result($student_id, $room_id, $lease_start_date, $duration_semesters, $first_name, $last_name, $room_number);
-        $edit_stmt->fetch();
+        
+        if (!$edit_stmt->fetch()) {
+            echo "<p>No lease found for the given ID.</p>";
+            exit();
+        }
+        
         $edit_stmt->close();
-
-        // Concatenate student name for display
-        $student_name = "$first_name $last_name";
     } else {
-        echo "<script>alert('Error fetching lease details.');</script>";
+        echo "<p>Error preparing the edit query: " . $conn->error . "</p>";
+        exit();
     }
 }
+
 ?>
+
 
 
 <?php
 if (isset($_POST['update_lease'])) {
     $lease_id = intval($_POST['lease_id']);
-    $student_id = $_POST['student_id'];
-    $room_id = $_POST['room_id'];
     $lease_start_date = $_POST['lease_start_date'];
     $duration_semesters = intval($_POST['duration_semesters']);
 
@@ -319,23 +256,24 @@ if (isset($_POST['update_lease'])) {
         exit();
     }
 
-    // Calculate the total rent
+    // Calculate total rent for the lease duration
     $rent_amount = $monthly_rent * $duration_months;
 
-    // Update the lease
+    // Update the lease record
     $update_query = "
         UPDATE leases 
-        SET student_id = ?, room_id = ?, lease_start_date = ?, lease_end_date = ?, duration_semesters = ?, rent_amount = ?
+        SET lease_start_date = ?, lease_end_date = ?, duration_semesters = ?, rent_amount = ?
         WHERE lease_id = ?
     ";
+
     $update_stmt = $conn->prepare($update_query);
 
     if ($update_stmt) {
-        $update_stmt->bind_param("iissidi", $student_id, $room_id, $lease_start_date, $lease_end_date, $duration_semesters, $rent_amount, $lease_id);
+        $update_stmt->bind_param("ssidi", $lease_start_date, $lease_end_date, $duration_semesters, $rent_amount, $lease_id);
 
         if ($update_stmt->execute()) {
             echo "<script>alert('Lease updated successfully.');</script>";
-           
+            header("Location: leases.php");
             exit();
         } else {
             echo "<p>Error updating lease: " . $update_stmt->error . "</p>";
@@ -345,6 +283,7 @@ if (isset($_POST['update_lease'])) {
         echo "<p>Error preparing update query: " . $conn->error . "</p>";
     }
 }
+
 ?>
 
 
@@ -404,6 +343,7 @@ if (isset($_POST['update_lease'])) {
     }
     ?>
 </table>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -501,9 +441,8 @@ if (isset($_POST['update_lease'])) {
         color: #f1485b;
         border: 1px solid #f1485b;
     }
-    
-</style>
 
+</style>
 
 <body>
 

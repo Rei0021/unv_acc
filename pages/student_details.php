@@ -131,7 +131,7 @@ if ($kin_result->num_rows > 0) {
 ?>
 
 </div>
-<a href="students.php">Back to Student List</a>
+<a href="student_list.php">Back to Student List</a>
 
 </body>
 </html>

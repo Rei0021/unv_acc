@@ -8,63 +8,110 @@
 </head>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f9f9f9;
-        margin: 0;
-        
-    }
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+}
 
-    .rep-font {
-        text-align: center
+.rep-font {
+    text-align: center;
+}
 
-    }
+.h3 {
+    color: black;
+}
 
-    .h3 {
-        color: black;
-    }
+.report-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 40px auto;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-    .report-container {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 20px;
-        margin: 40px auto;
-        width: 80%;
-        max-width: 600px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
+.report-container nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
 
-    .report-container nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        text-align: center;
-    }
+.report-container nav ul li {
+    margin: 10px 0;
+}
 
-    .report-container nav ul li {
-        margin: 10px 0;
-    }
+.report-container nav ul li a {
+    text-decoration: none;
+    color: #f1485b;
+    font-size: 1em;
+    padding: 10px 20px;
+    border: 1px solid #f1485b;
+    border-radius: 4px;
+    display: inline-block;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-    .report-container nav ul li a {
-        text-decoration: none;
-        color: #f1485b;
-        font-size: 1em;
-        padding: 10px 20px;
-        border: 1px solid #f1485b;
-        border-radius: 4px;
-        display: inline-block;
-        transition: all 0.3s ease;
-        background-color: #fff;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+.report-container nav ul li a:hover {
+    background-color: #f1485b;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px);
+}
 
-    .report-container nav ul li a:hover {
-        background-color: #f1485b;
-        color: #fff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        transform: translateY(-3px);
-    }
+/* Additional Section Styles */
+.report-section {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f1f1f1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.report-section h3 {
+    text-align: center;
+    color: #333;
+}
+
+.report-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.report-section table, .report-section th, .report-section td {
+    border: 1px solid #ddd;
+}
+
+.report-section th, .report-section td {
+    padding: 10px;
+    text-align: left;
+}
+
+.report-section th {
+    background-color: #f1485b;
+    color: white;
+}
+
+.report-section tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.report-section tr:hover {
+    background-color: #f1f1f1;
+}
+
+.report-section p {
+    text-align: center;
+    color: #777;
+    font-style: italic;
+}
+
 </style>
 
 
@@ -105,11 +152,12 @@ include '../includes/header.php';
 $report = $_GET['report'] ?? 'waiting_list';
 
 if ($report === 'waiting_list') {
+    echo "<div class='report-section'>";
     echo "<h3>Students on Waiting List</h3>";
     $result = $conn->query("SELECT banner_number, first_name, last_name, email, current_status 
                             FROM students WHERE current_status = 'Waiting'");
     if ($result->num_rows > 0) {
-        echo "<table border='1'>
+        echo "<table>
                 <tr><th>Banner Number</th><th>Name</th><th>Email</th><th>Status</th></tr>";
         while ($row = $result->fetch_assoc()) {
             echo "<tr>
@@ -123,10 +171,12 @@ if ($report === 'waiting_list') {
     } else {
         echo "<p>No students on the waiting list.</p>";
     }
+    echo "</div>";
 }
 
 
 if ($report === 'available_rooms') {
+    echo "<div class='report-section'>";
     echo "<h3>Available Rooms</h3>";
     $hall_rooms = $conn->query("SELECT hall_rooms.room_number, halls_of_residence.name AS hall_name 
                                 FROM hall_rooms 
@@ -139,7 +189,7 @@ if ($report === 'available_rooms') {
     
     echo "<h4>Halls</h4>";
     if ($hall_rooms->num_rows > 0) {
-        echo "<table border='1'>
+        echo "<table>
                 <tr><th>Room Number</th><th>Hall Name</th></tr>";
         while ($row = $hall_rooms->fetch_assoc()) {
             echo "<tr>
@@ -154,7 +204,7 @@ if ($report === 'available_rooms') {
 
     echo "<h4>Flats</h4>";
     if ($flat_rooms->num_rows > 0) {
-        echo "<table border='1'>
+        echo "<table>
                 <tr><th>Room Number</th><th>Apartment Number</th></tr>";
         while ($row = $flat_rooms->fetch_assoc()) {
             echo "<tr>
@@ -166,11 +216,12 @@ if ($report === 'available_rooms') {
     } else {
         echo "<p>No available rooms in flats.</p>";
     }
+    echo "</div>";
 }
 
 if ($report === 'unpaid_invoices') {
+    echo "<div class='report-section'>";
     echo "<h3>Unpaid Invoices</h3>";
-
     $sql = "SELECT invoices.invoice_number, students.first_name, students.last_name, invoices.payment_due
             FROM invoices
             JOIN students ON invoices.student_id = students.student_id
@@ -183,7 +234,7 @@ if ($report === 'unpaid_invoices') {
     }
 
     if ($result->num_rows > 0) {
-        echo "<table border='1'>
+        echo "<table>
                 <tr><th>Invoice Number</th><th>Student Name</th><th>Amount Due</th></tr>";
         while ($row = $result->fetch_assoc()) {
             echo "<tr>
@@ -196,10 +247,11 @@ if ($report === 'unpaid_invoices') {
     } else {
         echo "<p>No unpaid invoices.</p>";
     }
+    echo "</div>";
 }
 
-
 if ($report === 'rent_summary') {
+    echo "<div class='report-section'>";
     echo "<h3>Rent Summary</h3>";
     $result = $conn->query("SELECT halls_of_residence.name AS hall_name, 
                             SUM(hall_rooms.monthly_rent) AS total_rent 
@@ -208,7 +260,7 @@ if ($report === 'rent_summary') {
                             JOIN leases ON hall_rooms.room_id = leases.room_id 
                             GROUP BY halls_of_residence.name");
     if ($result->num_rows > 0) {
-        echo "<table border='1'>
+        echo "<table>
                 <tr><th>Hall Name</th><th>Total Rent</th></tr>";
         while ($row = $result->fetch_assoc()) {
             echo "<tr>
@@ -220,6 +272,7 @@ if ($report === 'rent_summary') {
     } else {
         echo "<p>No rent collected yet.</p>";
     }
+    echo "</div>";
 }
 ?>
 
